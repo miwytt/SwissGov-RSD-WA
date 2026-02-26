@@ -107,186 +107,186 @@ for i, (page, pages) in enumerate(ALIGNED_PAGES.items()):
     
     #with open(f"annotations/annotations_final/{args.lang}/{page.replace('https___www.', '').replace('.html', '.jsonl')}", "r", encoding="utf-8") as f:
     # uncomment again once sanity check for reviewer is done
-    try:
-        with open(f"annotations/annotations_final/{args.lang}/{page.replace('https___www.', '').replace('.html', '.jsonl')}", "r", encoding="utf-8") as f:
+    #try:
+    with open(f"annotations/annotations_final/{args.lang}/{page.replace('https___www.', '').replace('.html', '.jsonl')}", "r", encoding="utf-8") as f:
+        
+        if page.replace('https___www.', '').replace('.html', '.jsonl') in os.listdir(f"annotations/annotations_raw/annotations2/{args.lang}"):
+            annotator_tag = 2
+        else:
+            annotator_tag = 1
+        # text1 = english   
+        # text2 = french
+        #print(page)
+        if args.lang == "fr" or args.lang == "it" or args.lang == "de":
+
+            annotations = [json.loads(line) for line in f]
+            labels_en = [[0] * len(line) for line in en_text]
+            labels_other = [[0] * len(line) for line in other_texts[args.lang]]
+
+            for annotation in annotations:
+                for text_position in annotation["text2_positions"]:
+                    token = en_text[text_position[0]][text_position[1]]
+                    assert token in annotation["text2"]
+                    # Set score to -1 for punctuation, otherwise use annotation score
+                    if token in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
+                        labels_en[text_position[0]][text_position[1]] = -1
+                    else:
+                        labels_en[text_position[0]][text_position[1]] = annotation['score']
             
-            if page.replace('https___www.', '').replace('.html', '.jsonl') in os.listdir(f"annotations/annotations_raw/annotations2/{args.lang}"):
-                annotator_tag = 2
-            else:
-                annotator_tag = 1
-            # text1 = english   
-            # text2 = french
-            #print(page)
-            if args.lang == "fr" or args.lang == "it" or args.lang == "de":
-
-                annotations = [json.loads(line) for line in f]
-                labels_en = [[0] * len(line) for line in en_text]
-                labels_other = [[0] * len(line) for line in other_texts[args.lang]]
-
-                for annotation in annotations:
-                    for text_position in annotation["text2_positions"]:
-                        token = en_text[text_position[0]][text_position[1]]
-                        assert token in annotation["text2"]
-                        # Set score to -1 for punctuation, otherwise use annotation score
-                        if token in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
-                            labels_en[text_position[0]][text_position[1]] = -1
-                        else:
-                            labels_en[text_position[0]][text_position[1]] = annotation['score']
-                
-                    for text_position in annotation["text1_positions"]:
-                        token = other_texts[args.lang][text_position[0]][text_position[1]]
-                        assert token in annotation["text1"]
-                        # Set score to -1 for punctuation, otherwise use annotation score 
-                        if token in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
-                            labels_other[text_position[0]][text_position[1]] = -1
-                        else:
-                            labels_other[text_position[0]][text_position[1]] = annotation['score']
-
-                # Get final tokens and labels for both languages
-                en_tokens = [token for line in en_text for token in line]
-                en_final_labels = [RSD_LABELS_MAP[label] for line in labels_en for label in line]
-                
-                other_tokens = [token for line in other_texts[args.lang] for token in line]
-                other_final_labels = [RSD_LABELS_MAP[label] for line in labels_other for label in line]
-
-                # Process English tokens and labels
-                processed_en_tokens = []
-                processed_en_labels = []
-                
-                for token, label in zip(en_tokens, en_final_labels):
-                    # Check if token has attached punctuation
-                    if any(p in token for p in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]):
-                        # Split token into parts
-                        parts = []
-                        current_part = ""
-                        for char in token:
-                            if char in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
-                                if current_part:
-                                    parts.append(current_part)
-                                parts.append(char)
-                                current_part = ""
-                            else:
-                                current_part += char
-                        if current_part:
-                            parts.append(current_part)
-                            
-                        # Add tokens and labels
-                        for part in parts:
-                            processed_en_tokens.append(part)
-                            if part in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
-                                processed_en_labels.append(-1.0)
-                            else:
-                                processed_en_labels.append(label)
+                for text_position in annotation["text1_positions"]:
+                    token = other_texts[args.lang][text_position[0]][text_position[1]]
+                    assert token in annotation["text1"]
+                    # Set score to -1 for punctuation, otherwise use annotation score 
+                    if token in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
+                        labels_other[text_position[0]][text_position[1]] = -1
                     else:
-                        processed_en_tokens.append(token)
-                        processed_en_labels.append(label)
+                        labels_other[text_position[0]][text_position[1]] = annotation['score']
 
-                # Process other language tokens and labels  
-                processed_other_tokens = []
-                processed_other_labels = []
-                
-                for token, label in zip(other_tokens, other_final_labels):
-                    # Check if token has attached punctuation
-                    if any(p in token for p in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]):
-                        # Split token into parts
-                        parts = []
-                        current_part = ""
-                        for char in token:
-                            if char in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
-                                if current_part:
-                                    parts.append(current_part)
-                                parts.append(char)
-                                current_part = ""
-                            else:
-                                current_part += char
-                        if current_part:
-                            parts.append(current_part)
-                            
-                        # Add tokens and labels
-                        for part in parts:
-                            processed_other_tokens.append(part)
-                            if part in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
-                                processed_other_labels.append(-1.0)
-                            else:
-                                processed_other_labels.append(label)
-                    else:
-                        processed_other_tokens.append(token)
-                        processed_other_labels.append(label)
+            # Get final tokens and labels for both languages
+            en_tokens = [token for line in en_text for token in line]
+            en_final_labels = [RSD_LABELS_MAP[label] for line in labels_en for label in line]
+            
+            other_tokens = [token for line in other_texts[args.lang] for token in line]
+            other_final_labels = [RSD_LABELS_MAP[label] for line in labels_other for label in line]
 
-                assert len(processed_en_tokens) == len(processed_en_labels)
-                assert len(processed_other_tokens) == len(processed_other_labels)
-
-                if not args.short:
-                    text_pairs.append({
-                    "text_a": " ".join(processed_en_tokens),
-                    "text_b": " ".join(processed_other_tokens), 
-                    "labels_a": processed_en_labels,
-                    "labels_b": processed_other_labels,
-                    "page_en": page,
-                    "page_other": other_pages[args.lang],
-                    "chunk_id": 0,  # Full document is chunk 0
-                    "id": f"admin_{args.lang}_{i}",
-                    "annotator_tag": annotator_tag,
-                })
+            # Process English tokens and labels
+            processed_en_tokens = []
+            processed_en_labels = []
+            
+            for token, label in zip(en_tokens, en_final_labels):
+                # Check if token has attached punctuation
+                if any(p in token for p in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]):
+                    # Split token into parts
+                    parts = []
+                    current_part = ""
+                    for char in token:
+                        if char in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
+                            if current_part:
+                                parts.append(current_part)
+                            parts.append(char)
+                            current_part = ""
+                        else:
+                            current_part += char
+                    if current_part:
+                        parts.append(current_part)
+                        
+                    # Add tokens and labels
+                    for part in parts:
+                        processed_en_tokens.append(part)
+                        if part in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
+                            processed_en_labels.append(-1.0)
+                        else:
+                            processed_en_labels.append(label)
                 else:
-                    # Split data into chunks of max 250 tokens
-                    max_tokens = 250
-                    chunks = []
+                    processed_en_tokens.append(token)
+                    processed_en_labels.append(label)
+
+            # Process other language tokens and labels  
+            processed_other_tokens = []
+            processed_other_labels = []
+            
+            for token, label in zip(other_tokens, other_final_labels):
+                # Check if token has attached punctuation
+                if any(p in token for p in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]):
+                    # Split token into parts
+                    parts = []
+                    current_part = ""
+                    for char in token:
+                        if char in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
+                            if current_part:
+                                parts.append(current_part)
+                            parts.append(char)
+                            current_part = ""
+                        else:
+                            current_part += char
+                    if current_part:
+                        parts.append(current_part)
+                        
+                    # Add tokens and labels
+                    for part in parts:
+                        processed_other_tokens.append(part)
+                        if part in [",", ".", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-", "_", "/", "\\", "|", "@", "#", "$", "%", "^", "&", "*", "+", "=", "<", ">", "~", "`"]:
+                            processed_other_labels.append(-1.0)
+                        else:
+                            processed_other_labels.append(label)
+                else:
+                    processed_other_tokens.append(token)
+                    processed_other_labels.append(label)
+
+            assert len(processed_en_tokens) == len(processed_en_labels)
+            assert len(processed_other_tokens) == len(processed_other_labels)
+
+            if not args.short:
+                text_pairs.append({
+                "text_a": " ".join(processed_en_tokens),
+                "text_b": " ".join(processed_other_tokens), 
+                "labels_a": processed_en_labels,
+                "labels_b": processed_other_labels,
+                "page_en": page,
+                "page_other": other_pages[args.lang],
+                "chunk_id": 0,  # Full document is chunk 0
+                "id": f"admin_{args.lang}_{i}",
+                "annotator_tag": annotator_tag,
+            })
+            else:
+                # Split data into chunks of max 250 tokens
+                max_tokens = 250
+                chunks = []
+                
+                # Calculate total tokens for both sentences combined
+                total_tokens = len(processed_en_tokens) + len(processed_other_tokens)
+                
+                if total_tokens <= max_tokens:
+                    # If total tokens is within limit, add as single chunk
+                    chunks.append({
+                        "text_a": " ".join(processed_en_tokens) if not args.llm else processed_en_tokens,
+                        "text_b": " ".join(processed_other_tokens) if not args.llm else processed_other_tokens,
+                        "labels_a": processed_en_labels,
+                        "labels_b": processed_other_labels,
+                        "page_en": page,
+                        "page_other": other_pages[args.lang],
+                        "chunk_id": 0,
+                        "id": f"admin_{args.lang}_{i}",
+                        "annotator_tag": annotator_tag,
+                    }) 
+                else:
+                    # Split into multiple chunks while trying to keep sentences together
+                    start_a = 0
+                    start_b = 0
+                    chunk_counter = 0
                     
-                    # Calculate total tokens for both sentences combined
-                    total_tokens = len(processed_en_tokens) + len(processed_other_tokens)
-                    
-                    if total_tokens <= max_tokens:
-                        # If total tokens is within limit, add as single chunk
+                    while start_a < len(processed_en_tokens) or start_b < len(processed_other_tokens):
+                        # Calculate how many tokens we can take from each sentence
+                        remaining_tokens = max_tokens
+                        end_a = min(start_a + remaining_tokens//2, len(processed_en_tokens))
+                        remaining_tokens -= (end_a - start_a)
+                        end_b = min(start_b + remaining_tokens, len(processed_other_tokens))
+                        
+                        # assert that labels have the same length as the tokens
+                        assert len(processed_en_tokens[start_a:end_a]) == len(processed_en_labels[start_a:end_a])
+                        assert len(processed_other_tokens[start_b:end_b]) == len(processed_other_labels[start_b:end_b])
+                        
                         chunks.append({
-                            "text_a": " ".join(processed_en_tokens) if not args.llm else processed_en_tokens,
-                            "text_b": " ".join(processed_other_tokens) if not args.llm else processed_other_tokens,
-                            "labels_a": processed_en_labels,
-                            "labels_b": processed_other_labels,
+                            "text_a": " ".join(processed_en_tokens[start_a:end_a]),
+                            "text_b": " ".join(processed_other_tokens[start_b:end_b]),
+                            "labels_a": processed_en_labels[start_a:end_a],
+                            "labels_b": processed_other_labels[start_b:end_b],
                             "page_en": page,
                             "page_other": other_pages[args.lang],
-                            "chunk_id": 0,
+                            "chunk_id": chunk_counter,
                             "id": f"admin_{args.lang}_{i}",
                             "annotator_tag": annotator_tag,
-                        }) 
-                    else:
-                        # Split into multiple chunks while trying to keep sentences together
-                        start_a = 0
-                        start_b = 0
-                        chunk_counter = 0
+                        })
                         
-                        while start_a < len(processed_en_tokens) or start_b < len(processed_other_tokens):
-                            # Calculate how many tokens we can take from each sentence
-                            remaining_tokens = max_tokens
-                            end_a = min(start_a + remaining_tokens//2, len(processed_en_tokens))
-                            remaining_tokens -= (end_a - start_a)
-                            end_b = min(start_b + remaining_tokens, len(processed_other_tokens))
-                            
-                            # assert that labels have the same length as the tokens
-                            assert len(processed_en_tokens[start_a:end_a]) == len(processed_en_labels[start_a:end_a])
-                            assert len(processed_other_tokens[start_b:end_b]) == len(processed_other_labels[start_b:end_b])
-                            
-                            chunks.append({
-                                "text_a": " ".join(processed_en_tokens[start_a:end_a]),
-                                "text_b": " ".join(processed_other_tokens[start_b:end_b]),
-                                "labels_a": processed_en_labels[start_a:end_a],
-                                "labels_b": processed_other_labels[start_b:end_b],
-                                "page_en": page,
-                                "page_other": other_pages[args.lang],
-                                "chunk_id": chunk_counter,
-                                "id": f"admin_{args.lang}_{i}",
-                                "annotator_tag": annotator_tag,
-                            })
-                            
-                            start_a = end_a
-                            start_b = end_b
-                            chunk_counter += 1
-                    
-                    # Add all chunks to text_pairs
-                    text_pairs.extend(chunks)
-    except FileNotFoundError:
+                        start_a = end_a
+                        start_b = end_b
+                        chunk_counter += 1
+                
+                # Add all chunks to text_pairs
+                text_pairs.extend(chunks)
+    """except FileNotFoundError:
             print(f"File not found: {f}")
-            continue
+            continue"""
 
 
 with jsonlines.open(test_gold_path, "w") as f:
