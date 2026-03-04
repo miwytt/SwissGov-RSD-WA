@@ -192,6 +192,11 @@ python -m scripts.latency_test
 ```
 
 ---
+## Updates
+
+* 04.04.2026: Due to previously low annotator agreements for the German subset, the German subset has been re-annotated. For inspections of the previous annotations refer to: https://github.com/ZurichNLP/SwissGov-RSD/tree/old-german-annotations
+
+---
 
 ## Citation
 
