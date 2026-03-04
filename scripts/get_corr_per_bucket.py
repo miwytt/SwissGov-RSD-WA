@@ -27,9 +27,9 @@ def main():
     parser.add_argument("--lang", type=str, help="Language to get the correlation for. Is needed for the correlation per bucket.")
     args = parser.parse_args()
 
-    """with open("list_to_drop.txt", "r") as f:
+    with open("list_to_drop.txt", "r") as f:
         list_to_drop = f.read().splitlines()
-        list_to_drop = [_.strip() for _ in list_to_drop]"""
+        list_to_drop = [_.strip() for _ in list_to_drop]
 
     token_buckets_count = defaultdict(int)
 
@@ -40,8 +40,8 @@ def main():
             with jsonlines.open(f"{args.input_folder}/gold_admin_{lang}.jsonl") as reader:
                 for item in reader:
 
-                    """if item['id'] in list_to_drop and ("DiffAlign" not in args.input_folder or "ModernBERT" not in args.input_folder):
-                        continue"""
+                    if item['id'] in list_to_drop and ("DiffAlign" not in args.input_folder or "ModernBERT" not in args.input_folder):
+                        continue
 
                     if len(item['labels_a']) < 200:
                         token_buckets_count["<200"] += 1
@@ -118,10 +118,9 @@ def main():
                 predictions = load_predictions(predictions_path)
                 """print(len(predictions))"""
 
-                """if "ModernBERT" not in str(predictions_path) and "DiffAlign" not in str(predictions_path):
+                if "ModernBERT" not in str(predictions_path) and "DiffAlign" not in str(predictions_path):
                     print("Dropping predictions")
                     predictions = [prediction for prediction in predictions if prediction.item_id not in list_to_drop]
-                """
                 gold_path = Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / 'full' /f'gold_admin_{lang}.jsonl' if "full" in args.input_folder else Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / 'dev' /f'gold_admin_{lang}.jsonl'
                 gold_samples = load_gold_data(gold_path)
 

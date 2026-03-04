@@ -44,8 +44,8 @@ def get_iou(file1_data, file2_data):
     file1_positions_en = {tuple(pos) for item in file1_data for pos in item["text2_positions"]}
     file2_positions_en = {tuple(pos) for item in file2_data for pos in item["text2_positions"]}
 
-    iou_en = len(file1_positions_en.intersection(file2_positions_en)) / len(file1_positions_en.union(file2_positions_en))
-    iou_other = len(file1_positions_other.intersection(file2_positions_other)) / len(file1_positions_other.union(file2_positions_other))
+    iou_en = len(file1_positions_en.intersection(file2_positions_en)) / len(file1_positions_en.union(file2_positions_en)) if len(file1_positions_en.union(file2_positions_en)) else 0
+    iou_other = len(file1_positions_other.intersection(file2_positions_other)) / len(file1_positions_other.union(file2_positions_other)) if len(file1_positions_other.union(file2_positions_other)) else 0
     return iou_en, iou_other
 
 
@@ -495,15 +495,15 @@ def main():
             iou_en, iou_other = get_iou(file1_data, file2_data)
             total_iou_en.append(iou_en)
             total_iou_other.append(iou_other)
-            """print()
+            print()
             print(f"IOU EN: {iou_en:.2f}")
-            print(f"IOU OTHER: {iou_other:.2f}")"""
+            print(f"IOU OTHER: {iou_other:.2f}")
 
             f1_en, f1_other = get_f1(file1_data, file2_data)
             total_f1_en.append(f1_en)
             total_f1_other.append(f1_other)
-            """print(f"F1 EN: {f1_en:.2f}")
-            print(f"F1 OTHER: {f1_other:.2f}")"""
+            print(f"F1 EN: {f1_en:.2f}")
+            print(f"F1 OTHER: {f1_other:.2f}")
 
             spearman_data_1.extend(file1_data)
             spearman_data_2.extend(file2_data)

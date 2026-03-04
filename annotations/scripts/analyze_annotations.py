@@ -11,7 +11,7 @@ parser.add_argument("--viz", action="store_true")
 parser.add_argument("--save_name", type=str, default="")
 args = parser.parse_args()
 
-annotations_dir = "annotations_raw"
+annotations_dir = "annotations/annotations_final"
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
     annotations = []
 
     for lang_dir in os.listdir(annotations_dir):
-        if args.lang != "all" and args.lang not in lang_dir:
+        if args.lang != "all" and args.lang not in lang_dir or "discarded" in lang_dir:
             continue
 
         path_to_annotation = os.path.join(annotations_dir, lang_dir)
@@ -28,7 +28,7 @@ def main():
             if not file.endswith(".jsonl"):
                 continue
 
-            print(f"Processing {path_to_annotation}/{file}")
+            #print(f"Processing {path_to_annotation}/{file}")
 
             with open(os.path.join(path_to_annotation, file), "r", encoding="utf-8") as f:
                 for line in f:
@@ -41,12 +41,11 @@ def main():
     
     df = pd.DataFrame(annotations)
 
-    print(f"Total annotations loaded: {len(df)}")
-    print("\nFirst few rows:")
+    #print(f"Total annotations loaded: {len(df)}")
+    #print("\nFirst few rows:")
 
-    print(df)
+    #print(df)
 
-    # print all rows that have score 1
     score1 = df[df["score"] == 1]
     score2 = df[df["score"] == 2]
     score3 = df[df["score"] == 3]
@@ -75,7 +74,7 @@ def main():
         plt.show()
 
     # save the visualization to a file
-    plt.savefig(f"visualizations/{args.save_name}{args.lang}.png")
+    plt.savefig(f"annotations/visualizations/{args.save_name}{args.lang}.png")
 
 
 

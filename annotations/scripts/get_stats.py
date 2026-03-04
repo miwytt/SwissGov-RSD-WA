@@ -90,8 +90,8 @@ def main():
             with jsonlines.open(f"{args.input_folder}/gold_admin_{lang}.jsonl") as reader:
                 for item in reader:
 
-                    if item['id'] in list_to_drop:
-                        continue
+                    """if item['id'] in list_to_drop:
+                        continue"""
 
                     total_num_tokens[lang] += len(item['labels_b'])
                     total_num_tokens[f"en_{lang}"] += len(item['labels_a'])

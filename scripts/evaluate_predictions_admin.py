@@ -7,6 +7,10 @@ from nlpstats.correlations import correlate, bootstrap
 
 from evaluation.utils import load_predictions, load_gold_data
 
+with open("list_to_drop.txt", "r") as f:
+    list_to_drop = f.read().splitlines()
+    LIST_TO_DROP = [_.strip() for _ in list_to_drop]
+
 
 def compute_correlations(pred_labels, gold_labels, show_std: bool):
     """Compute Spearman and Kendall correlations for given prediction and gold labels."""
@@ -71,6 +75,7 @@ def main(predictions_path_prefix: Path, short: bool, split: str, show_std: bool,
             
             predictions_path = Path(f'{str(predictions_path_prefix)}{lang}{"_short" if short else ""}{".jsonl.jsonl" if "llm_predictions" not in str(predictions_path_prefix) else ".jsonl"}')
             predictions = load_predictions(predictions_path)
+            predictions = [preds for preds in predictions if preds.item_id not in LIST_TO_DROP] if "llm" in str(predictions_path) else predictions
             print(len(predictions))
 
             gold_path = Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / split / f'gold_admin_{lang}{"_short" if short else ""}.jsonl' if "/" not in split else Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / split.split("/")[0] / split.split("/")[1] / f'gold_admin_{lang}{"_short" if short else ""}.jsonl'
@@ -216,13 +221,13 @@ def main(predictions_path_prefix: Path, short: bool, split: str, show_std: bool,
             
             predictions_path = Path(f'{str(predictions_path_prefix)}{lang}{"_short" if short else ""}{".jsonl.jsonl" if "llm_predictions" not in str(predictions_path_prefix) else ".jsonl"}')
             predictions = load_predictions(predictions_path)
+            predictions = [preds for preds in predictions if preds.item_id not in LIST_TO_DROP] if "llm" in str(predictions_path) else predictions
             print(len(predictions))
 
             gold_path = Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / split / f'gold_admin_{lang}{"_short" if short else ""}.jsonl' if "/" not in split else Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / split.split("/")[0] / split.split("/")[1] / f'gold_admin_{lang}{"_short" if short else ""}.jsonl'
             gold_samples = load_gold_data(gold_path)
 
             print(len(gold_samples))
-            print(len(predictions))
             assert len(predictions) == len(gold_samples)
 
             pred_labels = []
