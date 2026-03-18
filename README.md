@@ -104,6 +104,13 @@ python -m scripts.evaluate_predictions_admin [prediction_path_prefix]
 data/evaluation/encoder_predictions/dev/DiffAlign(model=Alibaba-NLP_gte-multilingual-base, layer=-1_admin_
 ```
 
+Use `--split` to evaluate against a specific gold label split regardless of which predictions file is provided (default: `full`):
+
+```bash
+python -m scripts.evaluate_predictions_admin [prediction_path_prefix] --split dev
+python -m scripts.evaluate_predictions_admin [prediction_path_prefix] --split test
+```
+
 **Special Note for DiffAlign with XLM-R + SimCSE:**
 
 When evaluating DiffAlign with a model that can take only relatively short input sequences, e.g. XLM-R + SimCSE for SwissGov, add the `--short` flag:

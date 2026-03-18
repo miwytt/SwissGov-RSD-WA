@@ -1,11 +1,29 @@
 from pathlib import Path
 import argparse as ap
+import json
 import os
 
 import numpy as np
 from nlpstats.correlations import correlate, bootstrap
 
 from evaluation.utils import load_predictions, load_gold_data
+
+
+def load_gold_ids(gold_path):
+    """Return list of id strings from a gold jsonl file."""
+    ids = []
+    with open(gold_path) as f:
+        for line in f:
+            r = json.loads(line)
+            ids.append(r['id'])
+    return ids
+
+
+def filter_predictions_to_split(predictions, split_gold_ids, full_gold_path):
+    """Filter a full-dataset predictions list to only those matching the split gold IDs."""
+    full_gold_ids = load_gold_ids(full_gold_path)
+    split_id_set = set(split_gold_ids)
+    return [pred for pred, gid in zip(predictions, full_gold_ids) if gid in split_id_set]
 
 with open("list_to_drop.txt", "r") as f:
     list_to_drop = f.read().splitlines()
@@ -80,6 +98,10 @@ def main(predictions_path_prefix: Path, short: bool, split: str, show_std: bool,
 
             gold_path = Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / split / f'gold_admin_{lang}{"_short" if short else ""}.jsonl' if "/" not in split else Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / split.split("/")[0] / split.split("/")[1] / f'gold_admin_{lang}{"_short" if short else ""}.jsonl'
             gold_samples = load_gold_data(gold_path)
+
+            if len(predictions) != len(gold_samples):
+                full_gold_path = Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / 'full' / f'gold_admin_{lang}{"_short" if short else ""}.jsonl'
+                predictions = filter_predictions_to_split(predictions, load_gold_ids(gold_path), full_gold_path)
 
             print(len(gold_samples))
             print(len(predictions))
@@ -227,6 +249,10 @@ def main(predictions_path_prefix: Path, short: bool, split: str, show_std: bool,
             gold_path = Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / split / f'gold_admin_{lang}{"_short" if short else ""}.jsonl' if "/" not in split else Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / split.split("/")[0] / split.split("/")[1] / f'gold_admin_{lang}{"_short" if short else ""}.jsonl'
             gold_samples = load_gold_data(gold_path)
 
+            if len(predictions) != len(gold_samples):
+                full_gold_path = Path(__file__).parent.parent / 'data' / 'evaluation' / 'gold_labels' / 'full' / f'gold_admin_{lang}{"_short" if short else ""}.jsonl'
+                predictions = filter_predictions_to_split(predictions, load_gold_ids(gold_path), full_gold_path)
+
             print(len(gold_samples))
             assert len(predictions) == len(gold_samples)
 
@@ -320,27 +346,7 @@ if __name__ == "__main__":
     parser.add_argument("--short", action="store_true")
     parser.add_argument("--show-std", action="store_true", help="Show standard deviation in results")
     parser.add_argument("--split-annotators", action="store_true", help="Compute correlations separately for each annotator")
+    parser.add_argument("--split", choices=["full", "dev", "test"], default="full", help="Gold label split to evaluate against (default: full)")
     args = parser.parse_args()
 
-    # More specific split detection to avoid false positives
-    path_str = str(args.predictions_path_prefix)
-    if "/dev/" in path_str or path_str.endswith("/dev"):
-        split = "dev"
-    elif "/test/" in path_str or path_str.endswith("/test"):
-        split = "test"
-    elif "/val/" in path_str or path_str.endswith("/val"):
-        split = "dev/val"
-    elif "/full/" in path_str or path_str.endswith("/full"):
-        split = "full"
-    else:
-        # Fallback: check for keywords anywhere in path (original behavior)
-        if "dev" in path_str:
-            split = "dev"
-        elif "test" in path_str:
-            split = "test"
-        elif "val" in path_str:
-            split = "dev/val"
-        else:
-            split = "full"
-
-    main(args.predictions_path_prefix, args.short if args.short else False, split, args.show_std, args.split_annotators)
+    main(args.predictions_path_prefix, args.short if args.short else False, args.split, args.show_std, args.split_annotators)
