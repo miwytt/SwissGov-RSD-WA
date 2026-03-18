@@ -3,7 +3,7 @@
 [![Paper](https://img.shields.io/badge/📄%20Paper-arXiv%3A2512.07538-B31B1B.svg)](https://arxiv.org/pdf/2512.07538)
 [![Dataset](https://img.shields.io/badge/🤗-Huggingface%20Dataset-yellow.svg)](https://huggingface.co/datasets/ZurichNLP/SwissGov-RSD)
 
-A comprehensive benchmark for evaluating token-level semantic difference recognition across multiple languages including iSTS-RSD ([Vamvas and Sennrich, 2023](https://aclanthology.org/2023.emnlp-main.835/)) and SwissGov-RSD ([Wastl et al., 2025]([https://aclanthology.org/2023.emnlp-main.835/](https://www.arxiv.org/abs/2512.07538)).
+A comprehensive benchmark for evaluating token-level semantic difference recognition across multiple languages including iSTS-RSD ([Vamvas and Sennrich, 2023](https://aclanthology.org/2023.emnlp-main.835/)) and SwissGov-RSD ([Wastl et al., 2025](https://www.arxiv.org/abs/2512.07538)).
 
 ---
 
