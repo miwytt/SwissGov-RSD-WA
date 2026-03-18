@@ -291,27 +291,25 @@ def main(predictions_path_prefix: Path, short: bool, split: str, show_std: bool,
         
         # Print results in table format for easy copy-paste to Google Sheets
         print(f"\n==={split.upper()} TEST RESULTS===")
-        # Tab-separated values for easy copy-paste
         print("Spearman:")
         row_values = []
         for lang in languages:
             corr, std = spearman_results[lang]
             if show_std:
-                row_values.append(f"{corr:.3f}±{std:.3f}")
+                row_values.append(f"{corr:.3f}±{std:.3f}".replace('.', ','))
             else:
-                row_values.append(f"{corr:.3f}")
+                row_values.append(f"{corr:.3f}".replace('.', ','))
         print("\t".join(languages))
         print("\t".join(row_values))
         
-        # Tab-separated values for easy copy-paste
         print("\nKendall's Tau-b:")
         row_values = []
         for lang in languages:
             corr, std = kendall_results[lang]
             if show_std:
-                row_values.append(f"{corr:.3f}±{std:.3f}")
+                row_values.append(f"{corr:.3f}±{std:.3f}".replace('.', ','))
             else:
-                row_values.append(f"{corr:.3f}")
+                row_values.append(f"{corr:.3f}".replace('.', ','))
         print("\t".join(languages))
         print("\t".join(row_values))
 
