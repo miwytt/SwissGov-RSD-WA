@@ -2,6 +2,10 @@ scripts/--junk--v2_splitting.py
 .openai/
 data/evaluation/.DS_Store
 
+# Claude Code
+.claude/
+CLAUDE.md
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
