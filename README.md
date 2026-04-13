@@ -204,9 +204,7 @@ python -m scripts.latency_test
 
 * 19.03.2026: Multi-parallel datasets can be very valuable for translation-related tasks! Find a translation-specific subset of SwissGov here: https://github.com/miwytt/multi-parallel-swissgov/
 
-* 04.03.2026: Due to previously low annotator agreements for the German subset, the German subset has been re-annotated. For inspections of the previous annotations refer to: https://github.com/ZurichNLP/SwissGov-RSD/tree/old-german-annotations
-
----
+* 04.03.2026: Due to previously low annotator agreements for the German subset, the German subset has been re-annotated. The previous annotations are preserved at: https://github.com/ZurichNLP/SwissGov-RSD/tree/old-german-annotations. Note that the data used in the experiments and described in the paper is the new re-annotated version.
 
 ## Citation
 
