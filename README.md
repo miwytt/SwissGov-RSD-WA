@@ -202,6 +202,8 @@ python -m scripts.latency_test
 ---
 ## Updates
 
+* 06.04.2026: The SwissGov-RSD paper was accepted to ACL Main! 🎉
+
 * 19.03.2026: Multi-parallel datasets can be very valuable for translation-related tasks! Find a translation-specific subset of SwissGov here: https://github.com/miwytt/multi-parallel-swissgov/
 
 * 04.03.2026: Due to previously low annotator agreements for the German subset, the German subset has been re-annotated. The previous annotations are preserved at: https://github.com/ZurichNLP/SwissGov-RSD/tree/old-german-annotations. Note that the data used in the experiments and described in the paper is the new re-annotated version.
