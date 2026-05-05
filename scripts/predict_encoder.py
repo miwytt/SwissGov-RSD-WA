@@ -6,7 +6,10 @@ from tqdm import tqdm
 from encoders.encoder_recognizer import EncoderDifferenceRecognizer
 from evaluation.utils import load_gold_data
 from rsd.recognizers import DiffAlign
+from rsd.recognizers import DiffAlignSoftBelt
+from rsd.recognizers import DiffAlignPyramidHard
 from rsd.recognizers.base import DifferenceRecognizer
+
 
 import torch
 
@@ -119,7 +122,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('model_name_or_path', type=Path)
-    parser.add_argument('--type', type=str, choices=['finetuned', 'diffalign'])
+    parser.add_argument('--type', type=str, choices=['finetuned', 'diffalign', 'soft_belt', 'pyramid'])
     parser.add_argument('--test_data', type=str, choices=['rsd', 'swissgov'])
     parser.add_argument('--lang', type=str, choices=['de', 'fr', 'it'])
     parser.add_argument('--split', type=str, choices=['dev', 'test', 'val', 'full'])
@@ -130,6 +133,10 @@ if __name__ == "__main__":
         recognizer = EncoderDifferenceRecognizer(args.model_name_or_path)
     elif args.type == 'diffalign':
         recognizer = DiffAlign(args.model_name_or_path)
+    elif args.type == 'soft_belt':
+        recognizer = DiffAlignSoftBelt(args.model_name_or_path)
+    elif args.type == 'pyramid':
+        recognizer = DiffAlignPyramidHard(args.model_name_or_path)
     else:
         raise ValueError(f"Invalid recognizer type: {args.type}")
 
