@@ -1,5 +1,6 @@
 from rsd.recognizers.diff_align import DiffAlign
 from rsd.recognizers.diff_align_soft_belt import DiffAlignSoftBelt
 from rsd.recognizers.diff_align_pyramid_hard import DiffAlignPyramidHard
+from rsd.recognizers.diff_align_pyramid_itermax import DiffAlignPyramidItermax
 from rsd.recognizers.diff_del import DiffDel
 from rsd.recognizers.diff_mask import DiffMask
