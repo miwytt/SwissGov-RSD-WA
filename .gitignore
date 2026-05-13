@@ -159,3 +159,5 @@ ipython_config.py
 #   git rm -r .ipynb_checkpoints/
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Python,JupyterNotebooks
+__pycache__/
+*.pyc
